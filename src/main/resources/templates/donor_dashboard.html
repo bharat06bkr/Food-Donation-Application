@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Donor Dashboard - Food Donation System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      color: #ff6600;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    p.welcome {
+      color: #555555;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    a.logout {
+      display: block;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #ffffff;
+      background-color: #ff6600;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      width: 100px;
+      margin-left: auto;
+      margin-right: auto;
+      transition: background-color 0.3s;
+    }
+
+    a.logout:hover {
+      background-color: #e65c00;
+    }
+
+    h2 {
+      color: #ff6600;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+
+    .form-card {
+      background-color: #fafafa;
+      padding: 20px 25px;
+      border-radius: 8px;
+      border: 1px solid #eaeaea;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #ff6600;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #e65c00;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+
+    table th {
+      background-color: #ff6600;
+      color: white;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .badge-available { background-color: #28a745; color: white; }
+    .badge-booked { background-color: #dc3545; color: white; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Donor Dashboard</h1>
+  <p class="welcome">Welcome, <span th:text="${currentUser.email}"></span>!</p>
+  <a th:href="@{/logout}" class="logout">Logout</a>
+
+  <h2>Post Surplus Food</h2>
+  <div class="form-card">
+    <form th:action="@{/donor/post-food}" method="post" th:object="${food}">
+      <div class="form-group">
+        <label>Food Item / Type:</label>
+        <input type="text" th:field="*{foodType}" placeholder="e.g., Rice, Packaged Meals, Sandwiches" required>
+      </div>
+      <div class="form-group">
+        <label>Quantity (Servings / Items):</label>
+        <input type="number" th:field="*{quantity}" min="1" placeholder="e.g., 20" required>
+      </div>
+      <div class="form-group">
+        <label>Contact Info & Pickup Address:</label>
+        <input type="text" th:field="*{contactInfo}" placeholder="e.g., Phone: 9876543210, Address: Main Street #12" required>
+      </div>
+      <button type="submit">Post Food Donation</button>
+    </form>
+  </div>
+
+  <h2>My Food Donations</h2>
+  <table>
+    <thead>
+    <tr>
+      <th>Food Type</th>
+      <th>Quantity</th>
+      <th>Contact Info</th>
+      <th>Status</th>
+      <th>Booked By</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="f : ${foods}">
+      <td th:text="${f.foodType}"></td>
+      <td th:text="${f.quantity}"></td>
+      <td th:text="${f.contactInfo}"></td>
+      <td>
+        <span th:if="${f.status == T(com.example.fooddonation.model.Food.Status).AVAILABLE}" class="badge badge-available">AVAILABLE</span>
+        <span th:if="${f.status == T(com.example.fooddonation.model.Food.Status).BOOKED}" class="badge badge-booked">BOOKED</span>
+      </td>
+      <td th:text="${f.receiver != null ? f.receiver.email : 'N/A'}"></td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(foods)}">
+      <td colspan="5">No food donations posted yet.</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
