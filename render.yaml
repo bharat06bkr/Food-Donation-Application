@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: food-donation-application
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    port: 8080
